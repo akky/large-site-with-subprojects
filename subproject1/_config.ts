@@ -3,7 +3,7 @@ import base_path from "lume/plugins/base_path.ts";
 
 const site = lume({
   src: "./src",
-  location: new URL("http://lume.local:8007/subproject1/"),
+  location: new URL("https://akky.github.io/subproject1/"),
   port: 80,
 });
 
