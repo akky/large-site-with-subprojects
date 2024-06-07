@@ -6,62 +6,54 @@ on:
     branches:
       - main
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        subproject: ['subproject1']
-#        subproject: ['mainproject', 'subproject1', 'subproject2']
 
     steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install Deno
         uses: denoland/setup-deno@main
         with:
           deno-version: 1.44.0
 
-      - name: Determine changed files
-        id: changes
+      - name: Run deno task lume for subproject1
         run: |
-          git fetch origin main
-          git diff --name-only origin/main HEAD > changes.txt
-          if grep -q "${{ matrix.subproject }}" changes.txt; then
-            echo "changes=true" >> $GITHUB_ENV
-          else
-            echo "changes=false" >> $GITHUB_ENV
-          fi
+          cd subproject1
+          deno task lume
 
-      - name: Build ${{ matrix.subproject }}
-        if: env.changes == 'true'
+      - name: Run deno task lume for subproject2
         run: |
-          cd ${{ matrix.subproject }}
-          echo "import 'lume/cli.ts'" | deno run -A -
-          mkdir -p ../webroot/${{ matrix.subproject }}
-          cp -r ./_site/* ../webroot/${{ matrix.subproject }}
+          cd subproject2
+          deno task lume
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write
-      contents: read    
-    steps:
-      - name: Install Deno
-        uses: denoland/setup-deno@main
+      - name: Run deno task lume for mainproject
+        run: |
+          cd mainproject
+          deno task lume
+
+      - name: Copy subproject1/_site/ to ./webroot/subproject1/
+        run: |
+          mkdir -p ./webroot/subproject1
+          cp -r subproject1/_site/* ./webroot/subproject1/
+
+      - name: Copy subproject2/_site/ to ./webroot/subproject2/
+        run: |
+          mkdir -p ./webroot/subproject2
+          cp -r subproject2/_site/* ./webroot/subproject2/
+
+      - name: Copy mainproject/_site/ to ./webroot/
+        run: |
+          mkdir -p ./webroot
+          cp -r mainproject/_site/* ./webroot/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          deno-version: 1.44.0
-
-      # - name: Upload to Deno Deploy
-      #   uses: denoland/deployctl@v1
-      #   with:
-      #     project: lume-example
-      #     entrypoint: server/main.ts
-
-    #   - name: Deploy to GitHub Pages
-    #     uses: peaceiris/actions-gh-pages@v3
-    #     with:
-    #       github_token: ${{ secrets.GITHUB_TOKEN }}
-    #       publish_dir: ./webroot
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./webroot

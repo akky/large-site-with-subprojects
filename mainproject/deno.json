@@ -1,0 +1,16 @@
+{
+  "imports": {
+    "lume/": "https://deno.land/x/lume@v2.2.1/"
+  },
+  "tasks": {
+    "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
+    "build": "deno task lume",
+    "serve": "deno task lume -s",
+    "serve_staging": "deno task serve --location=http://lume.local/ --port=80",
+  },
+  "compilerOptions": {
+    "types": [
+      "lume/types.ts"
+    ]
+  }
+}
