@@ -1,6 +1,6 @@
 {
     "tasks": {
         "build": "cd mainproject && deno task lume && cd ../subproject1 && deno task lume && cd ../subproject2 && deno task lume",
-        "serve": "deno run --allow-net --allow-read server.ts --port 8007"
+        "serve": "deno task build; deno run --allow-net --allow-read server.ts --port 8007"
     }
 }
