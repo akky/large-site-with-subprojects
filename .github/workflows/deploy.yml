@@ -58,4 +58,3 @@ jobs:
         with:
           project: "multi-lume-projects"
           entrypoint: "server.ts"
-          root: "./webroot/"
