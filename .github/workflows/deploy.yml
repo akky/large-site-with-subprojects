@@ -23,8 +23,35 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Build step
-        run: "deno build lume"
+      - name: Run deno task lume for subproject1
+        run: |
+          cd subproject1
+          deno task lume
+
+      - name: Run deno task lume for subproject2
+        run: |
+          cd subproject2
+          deno task lume
+
+      - name: Run deno task lume for mainproject
+        run: |
+          cd mainproject
+          deno task lume
+
+      - name: Copy subproject1/_site/ to ./webroot/subproject1/
+        run: |
+          mkdir -p ./webroot/subproject1
+          cp -r subproject1/_site/* ./webroot/subproject1/
+
+      - name: Copy subproject2/_site/ to ./webroot/subproject2/
+        run: |
+          mkdir -p ./webroot/subproject2
+          cp -r subproject2/_site/* ./webroot/subproject2/
+
+      - name: Copy mainproject/_site/ to ./webroot/
+        run: |
+          mkdir -p ./webroot
+          cp -r mainproject/_site/* ./webroot/
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
